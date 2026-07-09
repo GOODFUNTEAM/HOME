@@ -259,10 +259,14 @@ function T(work) { return work[CUR_LANG] || work.zh; }
     usePhotoInCameraSlot: function (dataUrl) {
       if (!cameraCardEl) return;
       var el = cameraCardEl;
+      var now = new Date();
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var stamp = now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate()) +
+        ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
       var photoWork = {
         img: dataUrl,
-        zh: { title: '你拍的照片', desc: '用你的相機即時拍下的照片，只有這次瀏覽看得到，重新整理頁面後就會消失，不會被保存或上傳。' },
-        en: { title: 'Your Photo', desc: 'Captured live with your camera. Visible only in this browsing session — it disappears on refresh and is never saved or uploaded.' }
+        zh: { title: stamp, desc: '用你的相機即時拍下的照片，只有這次瀏覽看得到，重新整理頁面後就會消失，不會被保存或上傳。' },
+        en: { title: stamp, desc: 'Captured live with your camera. Visible only in this browsing session — it disappears on refresh and is never saved or uploaded.' }
       };
       el.className = 'sphere-card';
       el.innerHTML = '<img src="' + dataUrl + '" alt="' + T(photoWork).title + '">';
