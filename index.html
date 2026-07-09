@@ -30,11 +30,6 @@
 </header>
 
 <main>
-  <div class="sphere-header">
-    <h1>孤芳小隊 GOODFUN TEAM</h1>
-    <p>拖曳環顧四周，鬆手後恢復自動旋轉。點擊卡片查看作品說明。</p>
-  </div>
-
   <div id="sphere-stage">
     <div id="sphere-world"></div>
   </div>
@@ -70,18 +65,18 @@ var WORKS = [
   var world = document.getElementById('sphere-world');
   var stage = document.getElementById('sphere-stage');
   var isMobile = window.innerWidth < 640;
-  var R = 180;
-  var BASE_SIZE = isMobile ? 62 : 90;
-  var REPEAT = 2;
+  var LAYERS = [150, 190, 230];
+  var PER_LAYER = isMobile ? 12 : 18;
+  var BASE_SIZE = isMobile ? 46 : 68;
   stage.style.perspective = (isMobile ? 240 : 220) + 'px';
   var cards = [];
 
-  function place(count, radius) {
+  function place(count, radius, angleOffset) {
     var pts = [];
     for (var i = 0; i < count; i++) {
       var y = 1 - (i / (count - 1)) * 2;
       var rad = Math.sqrt(1 - y * y);
-      var theta = Math.PI * (3 - Math.sqrt(5)) * i;
+      var theta = Math.PI * (3 - Math.sqrt(5)) * i + angleOffset;
       var x = Math.cos(theta) * rad;
       var z = Math.sin(theta) * rad;
       var phi = Math.acos(y);
@@ -93,30 +88,33 @@ var WORKS = [
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var totalCards = WORKS.length * REPEAT;
-  var cardPts = place(totalCards, R);
   var pending = [];
-  for (var i = 0; i < totalCards; i++) {
-    var w = WORKS[i % WORKS.length];
-    var p = cardPts[i];
-    var size = BASE_SIZE + (i % 4) * (isMobile ? 6 : 10);
-    var el = document.createElement('div');
-    el.className = 'sphere-card';
-    var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
-    var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.15)';
-    el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform:' + (reduceMotion ? finalT : startT) + '; transition-delay:' + (reduceMotion ? 0 : Math.min(i * 14, 900)) + 'ms;';
-    el.innerHTML = '<img src="' + w.img + '" alt="' + w.title + '" loading="lazy">';
-    (function (work) {
-      el.onclick = function () { openWork(work); };
-      el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work); } };
-    })(w);
-    el.setAttribute('role', 'button');
-    el.setAttribute('tabindex', '0');
-    el.setAttribute('aria-label', w.title);
-    world.appendChild(el);
-    cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x });
-    if (!reduceMotion) pending.push({ el: el, t: finalT });
-  }
+  var globalIndex = 0;
+  LAYERS.forEach(function (R, layerIdx) {
+    var layerPts = place(PER_LAYER, R, layerIdx * 1.4);
+    var sizeStep = isMobile ? 5 : 8;
+    layerPts.forEach(function (p, i) {
+      var w = WORKS[globalIndex % WORKS.length];
+      var size = BASE_SIZE + (i % 4) * sizeStep + layerIdx * (isMobile ? 4 : 6);
+      var el = document.createElement('div');
+      el.className = 'sphere-card';
+      var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
+      var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.15)';
+      el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform:' + (reduceMotion ? finalT : startT) + '; transition-delay:' + (reduceMotion ? 0 : Math.min(globalIndex * 10, 1100)) + 'ms;';
+      el.innerHTML = '<img src="' + w.img + '" alt="' + w.title + '" loading="lazy">';
+      (function (work) {
+        el.onclick = function () { openWork(work); };
+        el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work); } };
+      })(w);
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-label', w.title);
+      world.appendChild(el);
+      cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x });
+      if (!reduceMotion) pending.push({ el: el, t: finalT });
+      globalIndex++;
+    });
+  });
 
   if (pending.length) {
     requestAnimationFrame(function () {
