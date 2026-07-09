@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品 Works ｜ GOODFUN TEAM</title>
+<meta name="description" content="孤芳小隊 GOODFUN TEAM 作品總覽：印刷出版、生活道具、立體裝置。">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-overlay">
+  <div class="login-card">
+    <p class="login-eyebrow">GOODFUN TEAM ACCESS</p>
+    <p class="login-heading">正在為你產生訪客身分</p>
+    <div id="roll-avatar" class="login-avatar"></div>
+    <div class="stat-row"><span class="stat-label">等級</span><span id="roll-level" class="stat-value"></span></div>
+    <div class="stat-row"><span class="stat-label">職業</span><span id="roll-class" class="stat-value"></span></div>
+    <div class="stat-row"><span class="stat-label">稱號</span><span id="roll-title" class="stat-value"></span></div>
+    <div class="login-actions">
+      <button class="btn btn-secondary" onclick="goodfunLogin.roll()">重新抽取</button>
+      <button class="btn btn-primary" onclick="goodfunLogin.enter()">進入網站</button>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="brand" onclick="location.href='index.html'" style="cursor:pointer;">
+    <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
+    <span>GOODFUN TEAM</span>
+  </div>
+  <button class="nav-toggle" onclick="document.getElementById('navlinks').classList.toggle('open')" aria-label="開啟選單">
+    <i class="ti ti-menu-2" aria-hidden="true"></i>
+  </button>
+  <nav class="nav-links" id="navlinks">
+    <a href="index.html">首頁</a>
+    <a href="works.html" class="active">作品</a>
+    <a href="events.html">活動</a>
+    <a href="about.html">關於</a>
+  </nav>
+</header>
+
+<main>
+  <div class="sphere-header">
+    <h1>作品 Works</h1>
+    <p>拖曳環顧四周，鬆手後恢復自動旋轉。點擊卡片查看作品說明。</p>
+  </div>
+  <div class="works-filter" id="filter-bar">
+    <button class="filter-chip active" data-cat="all">全部</button>
+    <button class="filter-chip" data-cat="print">印刷出版</button>
+    <button class="filter-chip" data-cat="goods">生活道具</button>
+    <button class="filter-chip" data-cat="installation">立體裝置</button>
+  </div>
+
+  <div id="sphere-stage">
+    <div id="sphere-world"></div>
+  </div>
+</main>
+
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-close" onclick="closeModal()" onkeydown="if(event.key==='Enter'){closeModal()}" role="button" tabindex="0" aria-label="關閉">×</div>
+    <div class="modal-img-wrap"><img id="modal-img" src="" alt=""></div>
+    <div class="modal-body-inner">
+      <span id="modal-tag" class="modal-tag"></span>
+      <h2 id="modal-title"></h2>
+      <p id="modal-desc"></p>
+    </div>
+  </div>
+</div>
+
+<script src="login.js"></script>
+<script>
+var WORKS = [
+  { title: "馬年賀卡", img: "horse_card.jpg", cat: "print", desc: "明信片／孔版印刷。以馬年為主題，先以黏土手作並上色完成角色原型，再進行拍攝與分色製版。\n畫面中，孤芳小隊的角色「鼠」與「雪貂」坐上賽馬造型的搖搖馬，隱喻在追逐目標的過程中，看似前進，卻可能仍停留原地。" },
+  { title: "空心 IN PLACE", img: "inplace.jpg", cat: "print", desc: "攝影折頁小誌 × 水泥物件。創作始於 2024 年底移居台北後，持續觀察街頭被反覆使用的空心磚。\n透過攝影與折頁小誌形式，想像每一塊磚都在其位置中履行任務。" },
+  { title: "Soft Drinks", img: "softdrinks.jpg", cat: "goods", desc: "攝影 × 包裝設計。將 2023–2025 年間收集的酒罐影像轉化為絲巾圖像，並封裝於鋁罐中。唯有「開罐」才能取出絲巾，對應飲酒行為的不可逆性。" },
+  { title: "30時間 2nd Ed.", img: "30hours.jpg", cat: "print", desc: "攝影小誌 (A5)。以「30 小時制」為概念，透過實際行走與感受，用底片記錄新宿與涉谷的城市節奏。" },
+  { title: "Hand-it 手心貼", img: "handit.jpg", cat: "goods", desc: "文具設計。靈感來自把重要事情寫在手上，卻難以洗掉的生活經驗。將「手心」轉化為可張貼的便利貼造型。" },
+  { title: "PastePort 貼紙簿", img: "pastebook.jpg", cat: "print", desc: "貼紙冊。以街頭貼紙文化為起點，收集台灣街頭可能出現的貼紙場景，整理成 ZINE。" },
+  { title: "PASSTER 貼紙組", img: "passter.jpg", cat: "print", desc: "貼紙。將街頭物件與標語轉化為可自由張貼的貼紙。使用者在城市中經過、停留並貼上，成為留下痕跡的「PASSTER」。" },
+  { title: "燭籤 Lucky Candle", img: "candle.jpg", cat: "goods", desc: "樹脂、紙張。以台灣經典生日「問號蠟燭」為靈感，設計成幸運小物。象徵「最後一個願望，留給自己」。" },
+  { title: "PIPO君 張子", img: "pipo.jpg", cat: "installation", desc: "立體角色張子。以張子形式重製東京警視廳吉祥物「ピーポくん」，透過手作轉譯，將公共角色轉化為個人收藏物件。" },
+  { title: "孤芳收音機", img: "radio.jpg", cat: "installation", desc: "立體裝置。以聲音作為「訊號」與「連線」的隱喻，描繪角色在城市噪音中彼此接收與回應的狀態。" }
+];
+var CAT_LABEL = { print: "印刷出版", goods: "生活道具", installation: "立體裝置" };
+var CAT_COLOR = {
+  print: { bg: "var(--teal-pale)", fg: "var(--teal)" },
+  goods: { bg: "var(--coral-pale)", fg: "var(--coral)" },
+  installation: { bg: "var(--purple-pale)", fg: "var(--purple)" }
+};
+
+(function () {
+  var world = document.getElementById('sphere-world');
+  var stage = document.getElementById('sphere-stage');
+  var dotColors = ['#9FE1CB','#F0997B','#ED93B1','#AFA9EC','#FAC775','#85B7EB'];
+  var R_CARD = 175, R_DOT = 205;
+  var cards = [];
+
+  function place(count, radius) {
+    var pts = [];
+    for (var i = 0; i < count; i++) {
+      var y = 1 - (i / (count - 1)) * 2;
+      var rad = Math.sqrt(1 - y * y);
+      var theta = Math.PI * (3 - Math.sqrt(5)) * i;
+      var x = Math.cos(theta) * rad;
+      var z = Math.sin(theta) * rad;
+      var phi = Math.acos(y);
+      var lon = theta;
+      pts.push({ x: x, y: y, z: z, lon: lon, phi: phi, radius: radius });
+    }
+    return pts;
+  }
+
+  var cardPts = place(WORKS.length, R_CARD);
+  WORKS.forEach(function (w, i) {
+    var p = cardPts[i];
+    var size = 130;
+    var el = document.createElement('div');
+    el.className = 'sphere-card';
+    el.dataset.cat = w.cat;
+    el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform: rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px);';
+    el.innerHTML = '<img src="' + w.img + '" alt="' + w.title + '" loading="lazy">';
+    el.onclick = function () { openWork(w); };
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('aria-label', w.title);
+    el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(w); } };
+    world.appendChild(el);
+    cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x, isCard: true });
+  });
+
+  var dotPts = place(56, R_DOT);
+  dotPts.forEach(function (p, i) {
+    var size = 6 + (i % 3) * 4;
+    var el = document.createElement('div');
+    el.className = 'sphere-dot';
+    el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; background:' + dotColors[i % dotColors.length] + '; transform: rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px);';
+    world.appendChild(el);
+    cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x, isCard: false });
+  });
+
+  var rotY = 0, rotX = 0;
+  var dragging = false, lastX = 0, lastY = 0, autoSpin = true;
+
+  function currentZ(c, rxDeg, ryDeg) {
+    var rx = rxDeg * Math.PI / 180, ry = ryDeg * Math.PI / 180;
+    var x1 = c.wx * Math.cos(ry) + c.wz * Math.sin(ry);
+    var z1 = -c.wx * Math.sin(ry) + c.wz * Math.cos(ry);
+    return c.wy * Math.sin(rx) + z1 * Math.cos(rx);
+  }
+
+  function update() {
+    if (autoSpin) rotY += 0.1;
+    world.style.transform = 'translate(-50%,-50%) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      var zc = currentZ(c, rotX, rotY);
+      var closeness = (zc - 0.55) / 0.35;
+      closeness = Math.max(0, Math.min(1, closeness));
+      c.el.style.opacity = (1 - closeness).toFixed(2);
+      c.el.style.pointerEvents = closeness > 0.5 ? 'none' : 'auto';
+    }
+    requestAnimationFrame(update);
+  }
+  update();
+
+  stage.addEventListener('pointerdown', function (e) {
+    dragging = true; autoSpin = false; lastX = e.clientX; lastY = e.clientY;
+    stage.classList.add('dragging');
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    rotY += (e.clientX - lastX) * 0.3;
+    rotX -= (e.clientY - lastY) * 0.3;
+    rotX = Math.max(-80, Math.min(80, rotX));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  window.addEventListener('pointerup', function () {
+    if (!dragging) return;
+    dragging = false;
+    stage.classList.remove('dragging');
+    setTimeout(function () { autoSpin = true; }, 1200);
+  });
+
+  document.getElementById('filter-bar').addEventListener('click', function (e) {
+    var btn = e.target.closest('.filter-chip');
+    if (!btn) return;
+    document.querySelectorAll('.filter-chip').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var cat = btn.dataset.cat;
+    cards.forEach(function (c) {
+      if (!c.isCard) return;
+      c.el.style.display = (cat === 'all' || c.el.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+})();
+
+function openWork(w) {
+  document.getElementById('modal-img').src = w.img;
+  document.getElementById('modal-img').alt = w.title;
+  document.getElementById('modal-title').textContent = w.title;
+  document.getElementById('modal-desc').textContent = w.desc;
+  var tag = document.getElementById('modal-tag');
+  tag.textContent = CAT_LABEL[w.cat];
+  tag.style.background = CAT_COLOR[w.cat].bg;
+  tag.style.color = CAT_COLOR[w.cat].fg;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(e) {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>

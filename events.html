@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>活動 Events ｜ GOODFUN TEAM</title>
+<meta name="description" content="孤芳小隊 GOODFUN TEAM 過往參展活動紀錄，草率季 TPABF。">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-overlay">
+  <div class="login-card">
+    <p class="login-eyebrow">GOODFUN TEAM ACCESS</p>
+    <p class="login-heading">正在為你產生訪客身分</p>
+    <div id="roll-avatar" class="login-avatar"></div>
+    <div class="stat-row"><span class="stat-label">等級</span><span id="roll-level" class="stat-value"></span></div>
+    <div class="stat-row"><span class="stat-label">職業</span><span id="roll-class" class="stat-value"></span></div>
+    <div class="stat-row"><span class="stat-label">稱號</span><span id="roll-title" class="stat-value"></span></div>
+    <div class="login-actions">
+      <button class="btn btn-secondary" onclick="goodfunLogin.roll()">重新抽取</button>
+      <button class="btn btn-primary" onclick="goodfunLogin.enter()">進入網站</button>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="brand" onclick="location.href='index.html'" style="cursor:pointer;">
+    <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
+    <span>GOODFUN TEAM</span>
+  </div>
+  <button class="nav-toggle" onclick="document.getElementById('navlinks').classList.toggle('open')" aria-label="開啟選單">
+    <i class="ti ti-menu-2" aria-hidden="true"></i>
+  </button>
+  <nav class="nav-links" id="navlinks">
+    <a href="index.html">首頁</a>
+    <a href="works.html">作品</a>
+    <a href="events.html" class="active">活動</a>
+    <a href="about.html">關於</a>
+  </nav>
+</header>
+
+<main>
+  <div class="page-hero">
+    <h1>活動 Events</h1>
+    <p>草率季（TPABF）過往參展紀錄，直接嵌入 Instagram 貼文。</p>
+  </div>
+
+  <div class="ig-panel">
+    <p class="ig-panel-label">2026 草率季 TPABF 十週年</p>
+    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DWMRZO0D1Dx/" data-instgrm-version="14"></blockquote>
+  </div>
+
+  <div class="ig-panel">
+    <p class="ig-panel-label">2025 草率季回顧</p>
+    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DSCwMTHD34O/" data-instgrm-version="14"></blockquote>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="https://www.instagram.com/goodfun.team" target="_blank">IG: @goodfun.team</a></p>
+    <p>© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
+  </footer>
+</main>
+
+<script src="login.js"></script>
+<script async src="//www.instagram.com/embed.js"></script>
+</body>
+</html>

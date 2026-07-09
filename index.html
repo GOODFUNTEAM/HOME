@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOODFUN TEAM ｜ 孤芳小隊</title>
+<meta name="description" content="孤芳小隊 GOODFUN TEAM — 獨立藝術創作單位。關注日常環境中的結構、使用痕跡與暫停狀態。">
+<meta property="og:title" content="GOODFUN TEAM ｜ 孤芳小隊">
+<meta property="og:description" content="獨立藝術創作單位。透過攝影、印刷物件與立體裝置，捕捉城市中被遺忘的微小連線。">
+<meta property="og:image" content="logo.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-overlay">
+  <div class="login-card">
+    <p class="login-eyebrow">GOODFUN TEAM ACCESS</p>
+    <p class="login-heading">正在為你產生訪客身分</p>
+    <div id="roll-avatar" class="login-avatar"></div>
+    <div class="stat-row"><span class="stat-label">等級</span><span id="roll-level" class="stat-value"></span></div>
+    <div class="stat-row"><span class="stat-label">職業</span><span id="roll-class" class="stat-value"></span></div>
+    <div class="stat-row"><span class="stat-label">稱號</span><span id="roll-title" class="stat-value"></span></div>
+    <div class="login-actions">
+      <button class="btn btn-secondary" onclick="goodfunLogin.roll()">重新抽取</button>
+      <button class="btn btn-primary" onclick="goodfunLogin.enter()">進入網站</button>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="brand" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">
+    <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
+    <span>GOODFUN TEAM</span>
+  </div>
+  <button class="nav-toggle" onclick="document.getElementById('navlinks').classList.toggle('open')" aria-label="開啟選單">
+    <i class="ti ti-menu-2" aria-hidden="true"></i>
+  </button>
+  <nav class="nav-links" id="navlinks">
+    <a href="index.html" class="active">首頁</a>
+    <a href="works.html">作品</a>
+    <a href="events.html">活動</a>
+    <a href="about.html">關於</a>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="hero-bubble" style="width:130px;height:130px;left:6%;top:8%;background:var(--teal-pale);"></div>
+    <div class="hero-bubble" style="width:96px;height:96px;left:28%;top:38%;background:var(--coral-pale);"></div>
+    <div class="hero-bubble" style="width:74px;height:74px;left:56%;top:4%;background:var(--pink-pale);"></div>
+    <div class="hero-bubble" style="width:120px;height:120px;left:68%;top:44%;background:var(--purple-pale);"></div>
+    <div class="hero-bubble" style="width:64px;height:64px;left:14%;top:60%;background:var(--amber-pale);"></div>
+    <div class="hero-bubble" style="width:56px;height:56px;left:82%;top:12%;background:var(--blue-pale);"></div>
+    <div class="hero-center-label">孤芳小隊 GOODFUN TEAM</div>
+  </div>
+  <p class="hero-sub">獨立藝術創作單位。關注日常環境中的結構、使用痕跡與暫停狀態，透過攝影、印刷物件與立體裝置，捕捉快速流動的城市中被遺忘的微小連線。</p>
+
+  <div class="section-wrap">
+    <div class="card-grid">
+      <a class="nav-card" href="works.html">
+        <div class="nav-card-icon" style="background:var(--teal-soft);"><i class="ti ti-photo" style="color:var(--teal);" aria-hidden="true"></i></div>
+        <h3>作品 Works</h3>
+        <p>印刷出版 / 生活道具 / 立體裝置，站在球心視角瀏覽所有作品。</p>
+      </a>
+      <a class="nav-card" href="events.html">
+        <div class="nav-card-icon" style="background:var(--coral-soft);"><i class="ti ti-calendar-event" style="color:var(--coral);" aria-hidden="true"></i></div>
+        <h3>活動 Events</h3>
+        <p>草率季 TPABF 參展紀錄與現場影像。</p>
+      </a>
+      <a class="nav-card" href="about.html">
+        <div class="nav-card-icon" style="background:var(--pink-soft);"><i class="ti ti-users" style="color:var(--pink);" aria-hidden="true"></i></div>
+        <h3>關於 About</h3>
+        <p>團隊介紹、聯絡方式與 Instagram。</p>
+      </a>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-avatars">
+      <a href="https://www.instagram.com/rotion87" target="_blank" title="Rotion's IG"><img src="avatar_rotion.jpg" alt="Rotion 的大頭貼"></a>
+      <a href="https://www.instagram.com/l72uo_" target="_blank" title="423's IG"><img src="avatar_423.jpg" alt="423 的大頭貼"></a>
+    </div>
+    <p><a href="https://www.instagram.com/goodfun.team" target="_blank">IG: @goodfun.team</a></p>
+    <p>© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
+  </footer>
+</main>
+
+<script src="login.js"></script>
+</body>
+</html>
