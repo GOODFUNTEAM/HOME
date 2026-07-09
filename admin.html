@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品管理後台 ｜ GOODFUN TEAM</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  .admin-wrap { max-width: 960px; margin: 0 auto; padding: 90px 20px 60px; }
+  .admin-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .admin-top h1 { font-size: 20px; margin: 0; }
+  table.admin-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  table.admin-table th, table.admin-table td { text-align: left; padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  table.admin-table th { background: var(--bg); color: var(--text-secondary); font-weight: 700; }
+  table.admin-table img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 700; }
+  .badge-on { background: var(--teal-pale); color: var(--teal); }
+  .badge-off { background: var(--coral-pale); color: var(--coral); }
+  .row-actions { display: flex; gap: 8px; }
+  .row-actions button { font-size: 12px; padding: 5px 10px; }
+  .login-wrap { max-width: 340px; margin: 120px auto; text-align: center; }
+  .login-wrap input { width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 10px; font-size: 14px; font-family: var(--font-body); }
+  .field-row { margin-bottom: 12px; text-align: left; }
+  .field-row label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .field-row input, .field-row textarea, .field-row select { width: 100%; padding: 9px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 14px; font-family: var(--font-body); }
+  .field-row textarea { resize: vertical; min-height: 70px; }
+  #error-msg { color: var(--coral); font-size: 13px; min-height: 18px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand" onclick="location.href='index.html'" style="cursor:pointer;">
+    <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
+    <span>GOODFUN TEAM · 後台</span>
+  </div>
+  <nav class="nav-links" style="display:flex;">
+    <a href="#" id="logout-link" style="display:none;">登出</a>
+  </nav>
+</header>
+
+<div id="login-wrap" class="login-wrap">
+  <p class="login-eyebrow" style="font-size:11px; letter-spacing:.1em; color:var(--text-muted);">ADMIN LOGIN</p>
+  <h1 style="font-size:18px; margin:6px 0 20px;">商品管理後台登入</h1>
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="密碼">
+  <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">登入</button>
+  <p id="error-msg"></p>
+</div>
+
+<main id="admin-main" class="admin-wrap" style="display:none;">
+  <div class="admin-top">
+    <h1>商品管理</h1>
+    <button class="btn btn-primary" onclick="openForm()">+ 新增商品</button>
+  </div>
+  <table class="admin-table">
+    <thead>
+      <tr><th>圖片</th><th>名稱</th><th>分類</th><th>價格</th><th>庫存</th><th>狀態</th><th>操作</th></tr>
+    </thead>
+    <tbody id="product-tbody"></tbody>
+  </table>
+</main>
+
+<div id="modal-overlay" onclick="closeForm(event)">
+  <div class="modal-box" onclick="event.stopPropagation()" style="max-width:480px;">
+    <div class="modal-close" onclick="closeForm()">×</div>
+    <div class="modal-body-inner" style="padding:28px;">
+      <h2 id="form-title">新增商品</h2>
+      <input type="hidden" id="f-id">
+      <div class="field-row">
+        <label>商品名稱</label>
+        <input type="text" id="f-name">
+      </div>
+      <div class="field-row">
+        <label>描述</label>
+        <textarea id="f-description"></textarea>
+      </div>
+      <div class="field-row">
+        <label>圖片網址</label>
+        <input type="text" id="f-image" placeholder="https://...">
+      </div>
+      <div class="field-row">
+        <label>分類</label>
+        <input type="text" id="f-category" placeholder="例如：印刷出版">
+      </div>
+      <div class="field-row" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>價格 (NT$)</label>
+          <input type="number" id="f-price" min="0">
+        </div>
+        <div style="flex:1;">
+          <label>庫存數量</label>
+          <input type="number" id="f-stock" min="0">
+        </div>
+      </div>
+      <div class="field-row">
+        <label><input type="checkbox" id="f-active" style="width:auto; display:inline-block; margin-right:6px;">上架中（庫存歸零會自動關閉，需要重新上架請手動勾選）</label>
+      </div>
+      <p id="form-error" style="color:var(--coral); font-size:13px; min-height:18px;"></p>
+      <div class="login-actions" style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="closeForm()">取消</button>
+        <button class="btn btn-primary" onclick="saveProduct()">儲存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+let session = null;
+
+async function checkSession() {
+  const { data } = await supabaseClient.auth.getSession();
+  session = data.session;
+  render();
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('error-msg');
+  errEl.textContent = '';
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) {
+    errEl.textContent = '登入失敗：' + error.message;
+    return;
+  }
+  session = data.session;
+  render();
+}
+
+async function doLogout() {
+  await supabaseClient.auth.signOut();
+  session = null;
+  render();
+}
+
+function render() {
+  const loginWrap = document.getElementById('login-wrap');
+  const adminMain = document.getElementById('admin-main');
+  const logoutLink = document.getElementById('logout-link');
+  if (session) {
+    loginWrap.style.display = 'none';
+    adminMain.style.display = 'block';
+    logoutLink.style.display = 'inline';
+    logoutLink.onclick = (e) => { e.preventDefault(); doLogout(); };
+    loadProducts();
+  } else {
+    loginWrap.style.display = 'block';
+    adminMain.style.display = 'none';
+    logoutLink.style.display = 'none';
+  }
+}
+
+async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+  const tbody = document.getElementById('product-tbody');
+  tbody.innerHTML = '';
+  if (error) {
+    tbody.innerHTML = '<tr><td colspan="7">讀取失敗：' + error.message + '</td></tr>';
+    return;
+  }
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-muted);">還沒有商品，點右上角「新增商品」開始。</td></tr>';
+    return;
+  }
+  data.forEach((p) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : ''}</td>
+      <td>${p.name}</td>
+      <td>${p.category || '—'}</td>
+      <td>NT$ ${Number(p.price).toLocaleString()}</td>
+      <td>${p.stock}</td>
+      <td><span class="badge ${p.is_active ? 'badge-on' : 'badge-off'}">${p.is_active ? '上架中' : '已下架'}</span></td>
+      <td class="row-actions">
+        <button class="btn btn-secondary" onclick='openForm(${JSON.stringify(p).replace(/'/g, "&apos;")})'>編輯</button>
+        <button class="btn btn-secondary" onclick="deleteProduct('${p.id}')">刪除</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openForm(p) {
+  document.getElementById('form-error').textContent = '';
+  document.getElementById('form-title').textContent = p ? '編輯商品' : '新增商品';
+  document.getElementById('f-id').value = p ? p.id : '';
+  document.getElementById('f-name').value = p ? p.name : '';
+  document.getElementById('f-description').value = p ? (p.description || '') : '';
+  document.getElementById('f-image').value = p ? (p.image_url || '') : '';
+  document.getElementById('f-category').value = p ? (p.category || '') : '';
+  document.getElementById('f-price').value = p ? p.price : '';
+  document.getElementById('f-stock').value = p ? p.stock : '';
+  document.getElementById('f-active').checked = p ? p.is_active : true;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeForm(e) {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+async function saveProduct() {
+  const id = document.getElementById('f-id').value;
+  const payload = {
+    name: document.getElementById('f-name').value.trim(),
+    description: document.getElementById('f-description').value.trim(),
+    image_url: document.getElementById('f-image').value.trim(),
+    category: document.getElementById('f-category').value.trim(),
+    price: Number(document.getElementById('f-price').value) || 0,
+    stock: Number(document.getElementById('f-stock').value) || 0,
+    is_active: document.getElementById('f-active').checked
+  };
+  const errEl = document.getElementById('form-error');
+  if (!payload.name) { errEl.textContent = '請輸入商品名稱'; return; }
+
+  let error;
+  if (id) {
+    ({ error } = await supabaseClient.from('products').update(payload).eq('id', id));
+  } else {
+    ({ error } = await supabaseClient.from('products').insert(payload));
+  }
+  if (error) { errEl.textContent = '儲存失敗：' + error.message; return; }
+  closeForm();
+  loadProducts();
+}
+
+async function deleteProduct(id) {
+  if (!confirm('確定要刪除這項商品嗎？此動作無法復原。')) return;
+  const { error } = await supabaseClient.from('products').delete().eq('id', id);
+  if (error) { alert('刪除失敗：' + error.message); return; }
+  loadProducts();
+}
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeForm(); });
+checkSession();
+</script>
+</body>
+</html>

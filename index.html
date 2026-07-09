@@ -24,6 +24,7 @@
   <nav class="nav-links" id="navlinks">
     <a href="index.html" class="active">作品</a>
     <a href="events.html">活動</a>
+    <a href="shop.html">商店</a>
     <a href="about.html">關於</a>
   </nav>
 </header>
@@ -68,11 +69,10 @@ var WORKS = [
 (function () {
   var world = document.getElementById('sphere-world');
   var stage = document.getElementById('sphere-stage');
-  var dotColors = ['#9FE1CB','#F0997B','#ED93B1','#AFA9EC','#FAC775','#85B7EB'];
   var isMobile = window.innerWidth < 640;
-  var R_CARD = 175, R_DOT = 205;
-  var CARD_SIZE = isMobile ? 78 : 110;
-  var REPEAT = 4;
+  var R = 180;
+  var BASE_SIZE = isMobile ? 62 : 90;
+  var REPEAT = 2;
   stage.style.perspective = (isMobile ? 240 : 220) + 'px';
   var cards = [];
 
@@ -94,12 +94,12 @@ var WORKS = [
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var totalCards = WORKS.length * REPEAT;
-  var cardPts = place(totalCards, R_CARD);
+  var cardPts = place(totalCards, R);
   var pending = [];
   for (var i = 0; i < totalCards; i++) {
     var w = WORKS[i % WORKS.length];
     var p = cardPts[i];
-    var size = CARD_SIZE;
+    var size = BASE_SIZE + (i % 4) * (isMobile ? 6 : 10);
     var el = document.createElement('div');
     el.className = 'sphere-card';
     var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
@@ -114,22 +114,9 @@ var WORKS = [
     el.setAttribute('tabindex', '0');
     el.setAttribute('aria-label', w.title);
     world.appendChild(el);
-    cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x, isCard: true });
+    cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x });
     if (!reduceMotion) pending.push({ el: el, t: finalT });
   }
-
-  var dotPts = place(30, R_DOT);
-  dotPts.forEach(function (p, i) {
-    var size = 6 + (i % 3) * 4;
-    var el = document.createElement('div');
-    el.className = 'sphere-dot';
-    var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
-    var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.1)';
-    el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; background:' + dotColors[i % dotColors.length] + '; transform:' + (reduceMotion ? finalT : startT) + '; transition-delay:' + (reduceMotion ? 0 : Math.min(i * 14, 900)) + 'ms;';
-    world.appendChild(el);
-    cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x, isCard: false });
-    if (!reduceMotion) pending.push({ el: el, t: finalT });
-  });
 
   if (pending.length) {
     requestAnimationFrame(function () {
@@ -142,6 +129,7 @@ var WORKS = [
   var rotY = 0, rotX = 0;
   var dragging = false, lastX = 0, lastY = 0, autoSpin = true;
 
+
   function currentZ(c, rxDeg, ryDeg) {
     var rx = rxDeg * Math.PI / 180, ry = ryDeg * Math.PI / 180;
     var x1 = c.wx * Math.cos(ry) + c.wz * Math.sin(ry);
@@ -150,12 +138,12 @@ var WORKS = [
   }
 
   function update() {
-    if (autoSpin) rotY += 0.1;
+    if (autoSpin) rotY += 0.12;
     world.style.transform = 'translate(-50%,-50%) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
       var zc = currentZ(c, rotX, rotY);
-      var closeness = (zc - 0.55) / 0.35;
+      var closeness = (zc - 0.5) / 0.4;
       closeness = Math.max(0, Math.min(1, closeness));
       c.el.style.opacity = (1 - closeness).toFixed(2);
       c.el.style.pointerEvents = closeness > 0.5 ? 'none' : 'auto';
