@@ -11,16 +11,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="sphere-page">
 
 <header class="site-header">
   <div class="brand" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">
     <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
     <span>GOODFUN TEAM</span>
   </div>
-  <button class="nav-toggle" onclick="document.getElementById('navlinks').classList.toggle('open')" aria-label="開啟選單">
-    <i class="ti ti-menu-2" aria-hidden="true"></i>
-  </button>
   <nav class="nav-links" id="navlinks">
     <a href="index.html" class="active">作品</a>
     <a href="events.html">活動</a>
@@ -63,7 +60,7 @@ var WORKS = [
   var isMobile = window.innerWidth < 640;
   var LAYERS = [150, 190, 230];
   var PER_LAYER = isMobile ? 12 : 18;
-  var BASE_SIZE = isMobile ? 46 : 68;
+  var BASE_SIZE = isMobile ? 68 : 68;
   stage.style.perspective = (isMobile ? 240 : 220) + 'px';
   var cards = [];
 
@@ -88,10 +85,10 @@ var WORKS = [
   var globalIndex = 0;
   LAYERS.forEach(function (R, layerIdx) {
     var layerPts = place(PER_LAYER, R, layerIdx * 1.4);
-    var sizeStep = isMobile ? 5 : 8;
+    var sizeStep = isMobile ? 8 : 8;
     layerPts.forEach(function (p, i) {
       var w = WORKS[globalIndex % WORKS.length];
-      var size = BASE_SIZE + (i % 4) * sizeStep + layerIdx * (isMobile ? 4 : 6);
+      var size = BASE_SIZE + (i % 4) * sizeStep + layerIdx * (isMobile ? 6 : 6);
       var el = document.createElement('div');
       el.className = 'sphere-card';
       var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
@@ -204,12 +201,42 @@ var WORKS = [
 
 
 var detailState = { open: false, cardEl: null, cardRect: null, flipEl: null };
+var marqueeReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function buildMarquee(text) {
   var t = text.replace(/\n/g, '　').trim();
-  var unit = t + '　★　';
-  return unit + unit + unit;
+  return t + '　★　';
 }
+
+function setupMarquee(el, dir) {
+  var offset = 0;
+  var unit = 0;
+  function measure() {
+    unit = el.scrollWidth / 2;
+    offset = dir === 'r' ? -unit : 0;
+    el.style.transform = 'translateX(' + offset + 'px)';
+  }
+  function step() {
+    if (!marqueeReduceMotion && unit > 0) {
+      if (dir === 'l') {
+        offset -= 0.5;
+        if (offset <= -unit) offset += unit;
+      } else {
+        offset += 0.5;
+        if (offset >= 0) offset -= unit;
+      }
+      el.style.transform = 'translateX(' + offset + 'px)';
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+  return measure;
+}
+
+var marqueeTopEl = document.getElementById('marquee-top');
+var marqueeBottomEl = document.getElementById('marquee-bottom');
+var remeasureTop = setupMarquee(marqueeTopEl, 'l');
+var remeasureBottom = setupMarquee(marqueeBottomEl, 'r');
 
 function openWork(w, cardEl) {
   if (detailState.open || cardEl.dataset.flying === '1') return;
@@ -221,8 +248,11 @@ function openWork(w, cardEl) {
   cardEl.style.opacity = '0';
 
   document.getElementById('detail-title').textContent = w.title;
-  document.getElementById('marquee-top').textContent = buildMarquee(w.desc);
-  document.getElementById('marquee-bottom').textContent = buildMarquee(w.desc);
+  var mText = buildMarquee(w.desc);
+  marqueeTopEl.textContent = mText + mText;
+  marqueeBottomEl.textContent = mText + mText;
+  remeasureTop();
+  remeasureBottom();
   document.getElementById('detail-img').src = w.img;
   document.getElementById('detail-img').alt = w.title;
 
@@ -238,6 +268,12 @@ function openWork(w, cardEl) {
   flip.style.borderRadius = '50%';
   document.body.appendChild(flip);
   detailState.flipEl = flip;
+  flip.addEventListener('click', function (e) {
+    e.stopPropagation();
+    flip.classList.remove('spin');
+    void flip.offsetWidth;
+    flip.classList.add('spin');
+  });
 
   void flip.offsetWidth;
 
