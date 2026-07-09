@@ -10,21 +10,6 @@
 </head>
 <body>
 
-<div id="login-overlay">
-  <div class="login-card">
-    <p class="login-eyebrow">GOODFUN TEAM ACCESS</p>
-    <p class="login-heading">正在為你產生訪客身分</p>
-    <div id="roll-avatar" class="login-avatar"></div>
-    <div class="stat-row"><span class="stat-label">等級</span><span id="roll-level" class="stat-value"></span></div>
-    <div class="stat-row"><span class="stat-label">職業</span><span id="roll-class" class="stat-value"></span></div>
-    <div class="stat-row"><span class="stat-label">稱號</span><span id="roll-title" class="stat-value"></span></div>
-    <div class="login-actions">
-      <button class="btn btn-secondary" onclick="goodfunLogin.roll()">重新抽取</button>
-      <button class="btn btn-primary" onclick="goodfunLogin.enter()">進入網站</button>
-    </div>
-  </div>
-</div>
-
 <header class="site-header">
   <div class="brand" onclick="location.href='index.html'" style="cursor:pointer;">
     <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
@@ -34,21 +19,20 @@
     <i class="ti ti-menu-2" aria-hidden="true"></i>
   </button>
   <nav class="nav-links" id="navlinks">
-    <a href="index.html">首頁</a>
-    <a href="works.html">作品</a>
+    <a href="index.html">作品</a>
     <a href="events.html">活動</a>
     <a href="about.html" class="active">關於</a>
   </nav>
 </header>
 
 <main>
-  <div class="page-hero">
+  <div class="page-hero reveal">
     <h1>關於 孤芳小隊</h1>
     <p>獨立藝術創作單位。關注日常環境中的結構、使用痕跡與暫停狀態。<br><br>
     我們透過攝影、印刷物件與立體裝置，試圖捕捉那些在快速流動的城市中被遺忘的「微小連線」。</p>
   </div>
 
-  <div class="about-grid" style="margin-top:28px;">
+  <div class="about-grid reveal" style="margin-top:28px;">
     <div class="member-card">
       <a href="https://www.instagram.com/rotion87" target="_blank">
         <img src="avatar_rotion.jpg" alt="Rotion 的大頭貼">
@@ -65,7 +49,7 @@
     </div>
   </div>
 
-  <div class="page-hero" style="margin-top:20px;">
+  <div class="page-hero reveal" style="margin-top:20px;">
     <p>Email: goodfun.team@gmail.com<br>
     <a href="https://www.instagram.com/goodfun.team" target="_blank" style="font-weight:700; text-decoration:underline;">IG: @goodfun.team</a></p>
   </div>
@@ -74,7 +58,6 @@
     <p>© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
   </footer>
 </main>
-
-<script src="login.js"></script>
+<script src="common.js"></script>
 </body>
 </html>

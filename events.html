@@ -10,21 +10,6 @@
 </head>
 <body>
 
-<div id="login-overlay">
-  <div class="login-card">
-    <p class="login-eyebrow">GOODFUN TEAM ACCESS</p>
-    <p class="login-heading">正在為你產生訪客身分</p>
-    <div id="roll-avatar" class="login-avatar"></div>
-    <div class="stat-row"><span class="stat-label">等級</span><span id="roll-level" class="stat-value"></span></div>
-    <div class="stat-row"><span class="stat-label">職業</span><span id="roll-class" class="stat-value"></span></div>
-    <div class="stat-row"><span class="stat-label">稱號</span><span id="roll-title" class="stat-value"></span></div>
-    <div class="login-actions">
-      <button class="btn btn-secondary" onclick="goodfunLogin.roll()">重新抽取</button>
-      <button class="btn btn-primary" onclick="goodfunLogin.enter()">進入網站</button>
-    </div>
-  </div>
-</div>
-
 <header class="site-header">
   <div class="brand" onclick="location.href='index.html'" style="cursor:pointer;">
     <div class="brand-dot"><img src="logo.png" alt="GOODFUN TEAM"></div>
@@ -34,25 +19,24 @@
     <i class="ti ti-menu-2" aria-hidden="true"></i>
   </button>
   <nav class="nav-links" id="navlinks">
-    <a href="index.html">首頁</a>
-    <a href="works.html">作品</a>
+    <a href="index.html">作品</a>
     <a href="events.html" class="active">活動</a>
     <a href="about.html">關於</a>
   </nav>
 </header>
 
 <main>
-  <div class="page-hero">
+  <div class="page-hero reveal">
     <h1>活動 Events</h1>
     <p>草率季（TPABF）過往參展紀錄，直接嵌入 Instagram 貼文。</p>
   </div>
 
-  <div class="ig-panel">
+  <div class="ig-panel reveal">
     <p class="ig-panel-label">2026 草率季 TPABF 十週年</p>
     <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DWMRZO0D1Dx/" data-instgrm-version="14"></blockquote>
   </div>
 
-  <div class="ig-panel">
+  <div class="ig-panel reveal">
     <p class="ig-panel-label">2025 草率季回顧</p>
     <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DSCwMTHD34O/" data-instgrm-version="14"></blockquote>
   </div>
@@ -63,7 +47,7 @@
   </footer>
 </main>
 
-<script src="login.js"></script>
+<script src="common.js"></script>
 <script async src="//www.instagram.com/embed.js"></script>
 </body>
 </html>
