@@ -16,46 +16,63 @@
     <span>GOODFUN TEAM</span>
   </div>
   <nav class="nav-links" id="navlinks">
-    <a href="index.html">作品</a>
-    <a href="events.html">活動</a>
-    <a href="shop.html">商店</a>
-    <a href="about.html" class="active">關於</a>
+    <a href="index.html" id="nav-works">作品</a>
+    <a href="events.html" id="nav-events">活動</a>
+    <a href="shop.html" id="nav-shop">商店</a>
+    <a href="about.html" id="nav-about" class="active">關於</a>
+    <button id="lang-toggle" class="lang-toggle">EN</button>
   </nav>
 </header>
 
 <main>
-  <div class="page-hero reveal">
-    <h1>關於 孤芳小隊</h1>
-    <p>獨立藝術創作單位。關注日常環境中的結構、使用痕跡與暫停狀態。<br><br>
-    我們透過攝影、印刷物件與立體裝置，試圖捕捉那些在快速流動的城市中被遺忘的「微小連線」。</p>
+  <div class="about-hero">
+    <div class="bg-bubble" style="width:130px;height:130px;top:6%;left:6%;background-image:url('horse_card.jpg');animation-duration:48s;"></div>
+    <div class="bg-bubble" style="width:96px;height:96px;top:14%;right:8%;background-image:url('candle.jpg');animation-duration:36s;animation-direction:reverse;"></div>
+    <div class="bg-bubble" style="width:150px;height:150px;bottom:6%;left:12%;background-image:url('radio.jpg');animation-duration:58s;"></div>
+    <div class="bg-bubble" style="width:84px;height:84px;bottom:10%;right:14%;background-image:url('pipo.jpg');animation-duration:32s;animation-direction:reverse;"></div>
+    <div class="bg-bubble" style="width:110px;height:110px;top:48%;left:44%;background-image:url('softdrinks.jpg');animation-duration:62s;"></div>
+
+    <div class="about-content reveal">
+      <h1 id="about-title">關於 孤芳小隊</h1>
+      <p id="about-desc">獨立藝術創作單位。關注日常環境中的結構、使用痕跡與暫停狀態。<br><br>
+      我們透過攝影、印刷物件與立體裝置，試圖捕捉那些在快速流動的城市中被遺忘的「微小連線」。</p>
+    </div>
   </div>
 
-  <div class="about-grid reveal" style="margin-top:28px;">
-    <div class="member-card">
+  <div class="member-bubbles reveal">
+    <div class="member-bubble-wrap">
       <a href="https://www.instagram.com/rotion87" target="_blank">
-        <img src="avatar_rotion.jpg" alt="Rotion 的大頭貼">
+        <div class="member-bubble" style="animation-duration:22s;"><img src="avatar_rotion.jpg" alt="Rotion 的大頭貼"></div>
         <h3>Rotion</h3>
         <p>@rotion87</p>
       </a>
     </div>
-    <div class="member-card">
+    <div class="member-bubble-wrap">
       <a href="https://www.instagram.com/l72uo_" target="_blank">
-        <img src="avatar_423.jpg" alt="423 的大頭貼">
+        <div class="member-bubble" style="animation-duration:26s;animation-direction:reverse;"><img src="avatar_423.jpg" alt="423 的大頭貼"></div>
         <h3>423</h3>
         <p>@l72uo_</p>
       </a>
     </div>
   </div>
 
-  <div class="page-hero reveal" style="margin-top:20px;">
-    <p>Email: goodfun.team@gmail.com<br>
+  <div class="page-hero reveal" style="margin-top:0;">
+    <p id="contact-label">Email: goodfun.team@gmail.com<br>
     <a href="https://www.instagram.com/goodfun.team" target="_blank" style="font-weight:700; text-decoration:underline;">IG: @goodfun.team</a></p>
   </div>
 
   <footer class="site-footer">
-    <p>© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
+    <p id="copyright-text">© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
   </footer>
 </main>
 <script src="common.js"></script>
+<script src="lang.js"></script>
+<script>
+if (window.GFLang && GFLang.get() === 'en') {
+  document.getElementById('about-title').textContent = 'About GOODFUN TEAM';
+  document.getElementById('about-desc').innerHTML = 'Independent art unit focusing on structures, traces of use, and states of pause in everyday environments.<br><br>Through photography, printed matter, and installations, we try to capture the small connections forgotten in the fast-moving city.';
+  document.getElementById('copyright-text').textContent = '© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.';
+}
+</script>
 </body>
 </html>

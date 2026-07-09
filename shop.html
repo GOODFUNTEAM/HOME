@@ -29,17 +29,18 @@
     <span>GOODFUN TEAM</span>
   </div>
   <nav class="nav-links" id="navlinks">
-    <a href="index.html">作品</a>
-    <a href="events.html">活動</a>
-    <a href="shop.html" class="active">商店</a>
-    <a href="about.html">關於</a>
+    <a href="index.html" id="nav-works">作品</a>
+    <a href="events.html" id="nav-events">活動</a>
+    <a href="shop.html" id="nav-shop" class="active">商店</a>
+    <a href="about.html" id="nav-about">關於</a>
+    <button id="lang-toggle" class="lang-toggle">EN</button>
   </nav>
 </header>
 
 <main>
   <div class="page-hero reveal">
-    <h1>商店 Shop</h1>
-    <p>目前僅供瀏覽，購物車與結帳功能開發中。</p>
+    <h1 id="shop-title">商店 Shop</h1>
+    <p id="shop-note">目前僅供瀏覽，購物車與結帳功能開發中。</p>
   </div>
   <div class="shop-wrap">
     <div id="shop-grid" class="shop-grid"></div>
@@ -48,6 +49,13 @@
 
 <script src="config.js"></script>
 <script src="common.js"></script>
+<script src="lang.js"></script>
+<script>
+if (window.GFLang && GFLang.get() === 'en') {
+  document.getElementById('shop-title').textContent = 'Shop';
+  document.getElementById('shop-note').textContent = 'Browsing only for now — cart and checkout coming soon.';
+}
+</script>
 <script>
 async function loadShop() {
   const grid = document.getElementById('shop-grid');

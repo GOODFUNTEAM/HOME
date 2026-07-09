@@ -19,10 +19,11 @@
     <span>GOODFUN TEAM</span>
   </div>
   <nav class="nav-links" id="navlinks">
-    <a href="index.html" class="active">作品</a>
-    <a href="events.html">活動</a>
-    <a href="shop.html">商店</a>
-    <a href="about.html">關於</a>
+    <a href="index.html" id="nav-works" class="active">作品</a>
+    <a href="events.html" id="nav-events">活動</a>
+    <a href="shop.html" id="nav-shop">商店</a>
+    <a href="about.html" id="nav-about">關於</a>
+    <button id="lang-toggle" class="lang-toggle">EN</button>
   </nav>
 </header>
 
@@ -39,20 +40,55 @@
   <div class="marquee-row marquee-bottom"><div class="marquee-track" id="marquee-bottom"></div></div>
 </div>
 
+<div id="camera-overlay">
+  <video id="camera-video" autoplay playsinline muted></video>
+  <canvas id="camera-canvas" style="display:none;"></canvas>
+  <p id="camera-hint">將鏡頭對準想拍的畫面</p>
+  <p id="camera-error"></p>
+  <div class="camera-controls">
+    <button id="camera-cancel" aria-label="取消拍照"><i class="ti ti-x" aria-hidden="true"></i></button>
+    <button id="camera-shutter" aria-label="拍照"></button>
+    <span class="camera-controls-spacer"></span>
+  </div>
+</div>
+
 <script src="common.js"></script>
+<script src="lang.js"></script>
 <script>
 var WORKS = [
-  { title: "馬年賀卡", img: "horse_card.jpg", desc: "明信片／孔版印刷。以馬年為主題，先以黏土手作並上色完成角色原型，再進行拍攝與分色製版。\n畫面中，孤芳小隊的角色「鼠」與「雪貂」坐上賽馬造型的搖搖馬，隱喻在追逐目標的過程中，看似前進，卻可能仍停留原地。" },
-  { title: "空心 IN PLACE", img: "inplace.jpg", desc: "攝影折頁小誌 × 水泥物件。創作始於 2024 年底移居台北後，持續觀察街頭被反覆使用的空心磚。\n透過攝影與折頁小誌形式，想像每一塊磚都在其位置中履行任務。" },
-  { title: "Soft Drinks", img: "softdrinks.jpg", desc: "攝影 × 包裝設計。將 2023–2025 年間收集的酒罐影像轉化為絲巾圖像，並封裝於鋁罐中。唯有「開罐」才能取出絲巾，對應飲酒行為的不可逆性。" },
-  { title: "30時間 2nd Ed.", img: "30hours.jpg", desc: "攝影小誌 (A5)。以「30 小時制」為概念，透過實際行走與感受，用底片記錄新宿與涉谷的城市節奏。" },
-  { title: "Hand-it 手心貼", img: "handit.jpg", desc: "文具設計。靈感來自把重要事情寫在手上，卻難以洗掉的生活經驗。將「手心」轉化為可張貼的便利貼造型。" },
-  { title: "PastePort 貼紙簿", img: "pastebook.jpg", desc: "貼紙冊。以街頭貼紙文化為起點，收集台灣街頭可能出現的貼紙場景，整理成 ZINE。" },
-  { title: "PASSTER 貼紙組", img: "passter.jpg", desc: "貼紙。將街頭物件與標語轉化為可自由張貼的貼紙。使用者在城市中經過、停留並貼上，成為留下痕跡的「PASSTER」。" },
-  { title: "燭籤 Lucky Candle", img: "candle.jpg", desc: "樹脂、紙張。以台灣經典生日「問號蠟燭」為靈感，設計成幸運小物。象徵「最後一個願望，留給自己」。" },
-  { title: "PIPO君 張子", img: "pipo.jpg", desc: "立體角色張子。以張子形式重製東京警視廳吉祥物「ピーポくん」，透過手作轉譯，將公共角色轉化為個人收藏物件。" },
-  { title: "孤芳收音機", img: "radio.jpg", desc: "立體裝置。以聲音作為「訊號」與「連線」的隱喻，描繪角色在城市噪音中彼此接收與回應的狀態。" }
+  { img: "horse_card.jpg",
+    zh: { title: "馬年賀卡", desc: "明信片／孔版印刷。以馬年為主題，先以黏土手作並上色完成角色原型，再進行拍攝與分色製版。\n畫面中，孤芳小隊的角色「鼠」與「雪貂」坐上賽馬造型的搖搖馬，隱喻在追逐目標的過程中，看似前進，卻可能仍停留原地。" },
+    en: { title: "Year of Horse Card", desc: "Postcard / Risograph. Characters ride rocking horses as a metaphor for moving while staying in place." } },
+  { img: "inplace.jpg",
+    zh: { title: "空心 IN PLACE", desc: "攝影折頁小誌 × 水泥物件。創作始於 2024 年底移居台北後，持續觀察街頭被反覆使用的空心磚。\n透過攝影與折頁小誌形式，想像每一塊磚都在其位置中履行任務。" },
+    en: { title: "IN PLACE", desc: "Photography fold-out zine with concrete object, observing hollow bricks in the streets of Taipei." } },
+  { img: "softdrinks.jpg",
+    zh: { title: "Soft Drinks", desc: "攝影 × 包裝設計。將 2023–2025 年間收集的酒罐影像轉化為絲巾圖像，並封裝於鋁罐中。唯有「開罐」才能取出絲巾，對應飲酒行為的不可逆性。" },
+    en: { title: "Soft Drinks", desc: "Scarves featuring beer can imagery, packaged in aluminum cans that must be 'opened' to access." } },
+  { img: "30hours.jpg",
+    zh: { title: "30時間 2nd Ed.", desc: "攝影小誌 (A5)。以「30 小時制」為概念，透過實際行走與感受，用底片記錄新宿與涉谷的城市節奏。" },
+    en: { title: "30 Hours 2nd Ed.", desc: "A photography zine documenting the rhythms of Shinjuku and Shibuya through a 30-hour temporal lens." } },
+  { img: "handit.jpg",
+    zh: { title: "Hand-it 手心貼", desc: "文具設計。靈感來自把重要事情寫在手上，卻難以洗掉的生活經驗。將「手心」轉化為可張貼的便利貼造型。" },
+    en: { title: "Hand-it", desc: "Sticky notes that transform the palm into a writable surface." } },
+  { img: "pastebook.jpg",
+    zh: { title: "PastePort 貼紙簿", desc: "貼紙冊。以街頭貼紙文化為起點，收集台灣街頭可能出現的貼紙場景，整理成 ZINE。" },
+    en: { title: "PastePort", desc: "A sticker book recording street scenes in Taiwan." } },
+  { img: "passter.jpg",
+    zh: { title: "PASSTER 貼紙組", desc: "貼紙。將街頭物件與標語轉化為可自由張貼的貼紙。使用者在城市中經過、停留並貼上，成為留下痕跡的「PASSTER」。" },
+    en: { title: "PASSTER", desc: "A sticker set derived from PASTE BOOK, allowing users to leave their own traces." } },
+  { img: "candle.jpg",
+    zh: { title: "燭籤 Lucky Candle", desc: "樹脂、紙張。以台灣經典生日「問號蠟燭」為靈感，設計成幸運小物。象徵「最後一個願望，留給自己」。" },
+    en: { title: "Lucky Candle", desc: "A lucky object inspired by classic birthday candles." } },
+  { img: "pipo.jpg",
+    zh: { title: "PIPO君 張子", desc: "立體角色張子。以張子形式重製東京警視廳吉祥物「ピーポくん」，透過手作轉譯，將公共角色轉化為個人收藏物件。" },
+    en: { title: "PIPO-KUN Papier-mâché", desc: "A hand-crafted papier-mâché reinterpretation of 'Pipo-kun'." } },
+  { img: "radio.jpg",
+    zh: { title: "孤芳收音機", desc: "立體裝置。以聲音作為「訊號」與「連線」的隱喻，描繪角色在城市噪音中彼此接收與回應的狀態。" },
+    en: { title: "GOODFUN Radio", desc: "An installation using sound as a metaphor for signal and connection." } }
 ];
+var CUR_LANG = window.GFLang ? window.GFLang.get() : 'zh';
+function T(work) { return work[CUR_LANG] || work.zh; }
 
 (function () {
   var world = document.getElementById('sphere-world');
@@ -60,7 +96,7 @@ var WORKS = [
   var isMobile = window.innerWidth < 640;
   var LAYERS = [150, 190, 230];
   var PER_LAYER = isMobile ? 12 : 18;
-  var BASE_SIZE = isMobile ? 68 : 68;
+  var BASE_SIZE = isMobile ? 78 : 100;
   stage.style.perspective = (isMobile ? 240 : 220) + 'px';
   var cards = [];
 
@@ -81,27 +117,39 @@ var WORKS = [
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  var totalSlots = LAYERS.length * PER_LAYER;
+  var cameraSlotIndex = Math.floor(Math.random() * totalSlots);
+
   var pending = [];
   var globalIndex = 0;
   LAYERS.forEach(function (R, layerIdx) {
     var layerPts = place(PER_LAYER, R, layerIdx * 1.4);
     var sizeStep = isMobile ? 8 : 8;
     layerPts.forEach(function (p, i) {
-      var w = WORKS[globalIndex % WORKS.length];
       var size = BASE_SIZE + (i % 4) * sizeStep + layerIdx * (isMobile ? 6 : 6);
       var el = document.createElement('div');
-      el.className = 'sphere-card';
       var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
       var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.15)';
       el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform:' + (reduceMotion ? finalT : startT) + '; transition-delay:' + (reduceMotion ? 0 : Math.min(globalIndex * 10, 1100)) + 'ms;';
-      el.innerHTML = '<img src="' + w.img + '" alt="' + w.title + '" loading="lazy">';
-      (function (work, cardEl) {
-        cardEl.onclick = function () { openWork(work, cardEl); };
-        cardEl.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work, cardEl); } };
-      })(w, el);
+
+      if (globalIndex === cameraSlotIndex) {
+        el.className = 'sphere-card camera-card';
+        el.innerHTML = '<i class="ti ti-camera" style="font-size:' + Math.round(size * 0.4) + 'px;" aria-hidden="true"></i>';
+        el.setAttribute('aria-label', CUR_LANG === 'zh' ? '用相機拍一張加入球體' : 'Take a photo to add to the sphere');
+        el.onclick = function () { window.openCamera(); };
+        el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.openCamera(); } };
+      } else {
+        var w = WORKS[globalIndex % WORKS.length];
+        el.className = 'sphere-card';
+        el.innerHTML = '<img src="' + w.img + '" alt="' + T(w).title + '" loading="lazy">';
+        (function (work, cardEl) {
+          cardEl.onclick = function () { openWork(work, cardEl); };
+          cardEl.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work, cardEl); } };
+        })(w, el);
+        el.setAttribute('aria-label', T(w).title);
+      }
       el.setAttribute('role', 'button');
       el.setAttribute('tabindex', '0');
-      el.setAttribute('aria-label', w.title);
       world.appendChild(el);
       cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x });
       if (!reduceMotion) pending.push({ el: el, t: finalT });
@@ -135,7 +183,7 @@ var WORKS = [
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
       var zc = currentZ(c, rotX, rotY);
-      var closeness = (zc - 0.5) / 0.4;
+      var closeness = (zc - 0.35) / 0.35;
       closeness = Math.max(0, Math.min(1, closeness));
       if (c.el.dataset.flying !== '1') {
         c.el.style.opacity = (1 - closeness).toFixed(2);
@@ -195,7 +243,32 @@ var WORKS = [
         });
       });
     },
-    setCardOpacity: function (el, val) { el.style.opacity = val; }
+    setCardOpacity: function (el, val) { el.style.opacity = val; },
+    addPhotoCard: function (dataUrl) {
+      var p = place(1, 205, Math.random() * Math.PI * 2)[0];
+      var size = isMobile ? 84 : 108;
+      var el = document.createElement('div');
+      el.className = 'sphere-card';
+      var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
+      var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.1)';
+      el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform:' + startT + ';';
+      el.innerHTML = '<img src="' + dataUrl + '" alt="' + (CUR_LANG === 'zh' ? '你拍的照片' : 'Your photo') + '">';
+      var photoWork = {
+        img: dataUrl,
+        zh: { title: '你拍的照片', desc: '用你的相機即時拍下的照片，只有這次瀏覽看得到，重新整理頁面後就會消失，不會被保存或上傳。' },
+        en: { title: 'Your Photo', desc: 'Captured live with your camera. Visible only in this browsing session — it disappears on refresh and is never saved or uploaded.' }
+      };
+      el.onclick = function () { openWork(photoWork, el); };
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-label', T(photoWork).title);
+      el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(photoWork, el); } };
+      world.appendChild(el);
+      cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x });
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { el.style.transform = finalT; });
+      });
+    }
   };
 })();
 
@@ -247,14 +320,14 @@ function openWork(w, cardEl) {
   cardEl.dataset.flying = '1';
   cardEl.style.opacity = '0';
 
-  document.getElementById('detail-title').textContent = w.title;
-  var mText = buildMarquee(w.desc);
+  document.getElementById('detail-title').textContent = T(w).title;
+  var mText = buildMarquee(T(w).desc);
   marqueeTopEl.textContent = mText + mText;
   marqueeBottomEl.textContent = mText + mText;
   remeasureTop();
   remeasureBottom();
   document.getElementById('detail-img').src = w.img;
-  document.getElementById('detail-img').alt = w.title;
+  document.getElementById('detail-img').alt = T(w).title;
 
   var flip = document.createElement('img');
   flip.className = 'flip-img';
@@ -330,7 +403,69 @@ document.getElementById('detail-overlay').addEventListener('click', function (e)
   closeWork();
 });
 document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') closeWork();
+  if (e.key === 'Escape') { closeWork(); closeCamera(); }
+});
+
+var cameraStream = null;
+
+window.openCamera = function () {
+  if (detailState.open) return;
+  var overlay = document.getElementById('camera-overlay');
+  var video = document.getElementById('camera-video');
+  var errEl = document.getElementById('camera-error');
+  var hintEl = document.getElementById('camera-hint');
+  errEl.textContent = '';
+  hintEl.style.display = '';
+  overlay.classList.add('open');
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    errEl.textContent = CUR_LANG === 'zh' ? '這個瀏覽器不支援相機功能。' : 'Camera is not supported in this browser.';
+    hintEl.style.display = 'none';
+    return;
+  }
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+    .then(function (stream) {
+      cameraStream = stream;
+      video.srcObject = stream;
+    })
+    .catch(function (err) {
+      hintEl.style.display = 'none';
+      errEl.textContent = CUR_LANG === 'zh'
+        ? '無法使用相機，請確認已允許網頁存取相機權限。'
+        : 'Could not access the camera. Please allow camera permission for this site.';
+    });
+};
+
+function closeCamera() {
+  document.getElementById('camera-overlay').classList.remove('open');
+  var video = document.getElementById('camera-video');
+  video.srcObject = null;
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(function (t) { t.stop(); });
+    cameraStream = null;
+  }
+}
+
+function capturePhoto() {
+  var video = document.getElementById('camera-video');
+  if (!video.videoWidth) return;
+  var canvas = document.getElementById('camera-canvas');
+  var size = Math.min(video.videoWidth, video.videoHeight);
+  canvas.width = size; canvas.height = size;
+  var ctx = canvas.getContext('2d');
+  var sx = (video.videoWidth - size) / 2;
+  var sy = (video.videoHeight - size) / 2;
+  ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
+  var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  closeCamera();
+  if (window.SphereControl) window.SphereControl.addPhotoCard(dataUrl);
+}
+
+document.getElementById('camera-shutter').addEventListener('click', capturePhoto);
+document.getElementById('camera-cancel').addEventListener('click', closeCamera);
+document.getElementById('camera-overlay').addEventListener('click', function (e) {
+  if (e.target.id === 'camera-overlay') closeCamera();
 });
 </script>
 

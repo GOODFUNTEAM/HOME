@@ -71,6 +71,12 @@ body.sphere-page #sphere-stage {
 .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-secondary); }
 .nav-links a { padding: 4px 2px; border-bottom: 2px solid transparent; transition: border-color .15s, color .15s; white-space: nowrap; }
 .nav-links a:hover, .nav-links a.active { color: var(--text); border-color: var(--text); }
+.lang-toggle {
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); cursor: pointer; margin-left: 20px;
+}
+.lang-toggle:hover { color: var(--text); border-color: var(--text-secondary); }
 
 @media (max-width: 720px) {
   .hero { height: 220px; }
@@ -85,6 +91,7 @@ body.sphere-page #sphere-stage {
   .site-header { padding-left: 14px; padding-right: 14px; }
   .brand { font-size: 13px; gap: 7px; }
   .nav-links { gap: 12px; font-size: 12px; }
+  .lang-toggle { margin-left: 10px; padding: 4px 9px; font-size: 11px; }
 }
 
 main { padding-top: env(safe-area-inset-top); padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
@@ -148,6 +155,47 @@ main { padding-top: env(safe-area-inset-top); padding-bottom: calc(72px + env(sa
   }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- 相機泡泡 + 拍照介面 ---------- */
+.camera-card {
+  display: flex; align-items: center; justify-content: center;
+  background: #EFEEE9; border-color: #C9C7BE !important;
+}
+.camera-card i { color: var(--text-secondary); }
+
+#camera-overlay {
+  position: fixed; inset: 0; z-index: 700; background: #0b0b0a;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .3s ease, visibility .3s ease;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+#camera-overlay.open { opacity: 1; visibility: visible; pointer-events: auto; }
+#camera-video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+#camera-hint {
+  position: absolute; top: calc(24px + env(safe-area-inset-top)); left: 0; right: 0;
+  text-align: center; color: rgba(255,255,255,0.85); font-size: 12.5px; z-index: 2;
+}
+#camera-error {
+  position: absolute; top: 50%; left: 20px; right: 20px; transform: translateY(-50%);
+  text-align: center; color: #fff; font-size: 13px; z-index: 2; line-height: 1.7;
+}
+.camera-controls {
+  position: absolute; bottom: calc(28px + env(safe-area-inset-bottom)); left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 2;
+}
+.camera-controls-spacer { width: 44px; height: 44px; }
+#camera-cancel {
+  width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15);
+  border: none; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+#camera-shutter {
+  width: 68px; height: 68px; border-radius: 50%; background: #fff;
+  border: 4px solid rgba(255,255,255,0.4); cursor: pointer; padding: 0;
+}
+#camera-shutter:active { background: #ddd; }
 
 
 /* ---------- Modal ---------- */
@@ -223,6 +271,49 @@ main { padding-top: env(safe-area-inset-top); padding-bottom: calc(72px + env(sa
   .flip-img.spin { animation: none !important; }
 }
 
+
+/* ---------- 關於頁：漂浮泡泡風格 ---------- */
+.about-hero {
+  position: relative; overflow: hidden;
+  min-height: 300px; display: flex; align-items: center; justify-content: center;
+  padding: 56px 20px 40px;
+}
+.bg-bubble {
+  position: absolute; border-radius: 50%; background-size: cover; background-position: center;
+  opacity: 0.16; z-index: 0; pointer-events: none;
+  animation-name: bubble-spin; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes bubble-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.about-content {
+  position: relative; z-index: 2; max-width: 560px; text-align: center;
+  background: rgba(250,250,248,0.82); backdrop-filter: blur(6px);
+  border-radius: var(--radius-lg); padding: 28px 26px;
+}
+.about-content h1 { font-size: 22px; margin: 0; letter-spacing: 0.02em; }
+.about-content p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; margin: 10px 0 0; }
+
+.member-bubbles {
+  display: flex; justify-content: center; gap: 52px; flex-wrap: wrap;
+  padding: 12px 20px 56px; max-width: 700px; margin: 0 auto; text-align: center;
+}
+.member-bubble-wrap a { display: block; text-decoration: none; }
+.member-bubble {
+  display: block; width: 92px; height: 92px; border-radius: 50%; overflow: hidden;
+  border: 3px solid var(--surface); box-shadow: 0 0 0 1.5px var(--border);
+  margin: 0 auto 12px;
+  animation-name: bubble-spin; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+.member-bubble img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.member-bubble-wrap h3 { margin: 0 0 2px; font-size: 14px; }
+.member-bubble-wrap p { margin: 0; font-size: 12px; color: var(--text-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-bubble, .member-bubble { animation: none !important; }
+}
+
+@media (max-width: 600px) {
+  .bg-bubble:nth-of-type(4), .bg-bubble:nth-of-type(5) { display: none; }
+}
 
 .page-hero { max-width: 700px; margin: 0 auto; padding: 48px 20px 32px; text-align: center; }
 .page-hero h1 { font-size: 24px; margin: 0; letter-spacing: 0.02em; }

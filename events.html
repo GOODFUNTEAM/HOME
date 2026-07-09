@@ -16,37 +16,47 @@
     <span>GOODFUN TEAM</span>
   </div>
   <nav class="nav-links" id="navlinks">
-    <a href="index.html">作品</a>
-    <a href="events.html" class="active">活動</a>
-    <a href="shop.html">商店</a>
-    <a href="about.html">關於</a>
+    <a href="index.html" id="nav-works">作品</a>
+    <a href="events.html" id="nav-events" class="active">活動</a>
+    <a href="shop.html" id="nav-shop">商店</a>
+    <a href="about.html" id="nav-about">關於</a>
+    <button id="lang-toggle" class="lang-toggle">EN</button>
   </nav>
 </header>
 
 <main>
   <div class="page-hero reveal">
-    <h1>活動 Events</h1>
+    <h1 id="page-title">活動 Events</h1>
   </div>
 
   <div class="events-grid">
     <div class="ig-panel reveal">
-      <span class="ig-panel-label"><i class="ti ti-calendar-event" style="font-size:14px;" aria-hidden="true"></i>2026 草率季 TPABF 十週年</span>
+      <span class="ig-panel-label"><i class="ti ti-calendar-event" style="font-size:14px;" aria-hidden="true"></i><span id="label-2026">2026 草率季 TPABF 十週年</span></span>
       <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DWMRZO0D1Dx/" data-instgrm-version="14"></blockquote>
     </div>
 
     <div class="ig-panel reveal">
-      <span class="ig-panel-label"><i class="ti ti-calendar-event" style="font-size:14px;" aria-hidden="true"></i>2025 草率季回顧</span>
+      <span class="ig-panel-label"><i class="ti ti-calendar-event" style="font-size:14px;" aria-hidden="true"></i><span id="label-2025">2025 草率季回顧</span></span>
       <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DSCwMTHD34O/" data-instgrm-version="14"></blockquote>
     </div>
   </div>
 
   <footer class="site-footer">
     <p><a href="https://www.instagram.com/goodfun.team" target="_blank">IG: @goodfun.team</a></p>
-    <p>© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
+    <p id="copyright-text">© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.</p>
   </footer>
 </main>
 
 <script src="common.js"></script>
+<script src="lang.js"></script>
 <script async src="//www.instagram.com/embed.js"></script>
+<script>
+if (window.GFLang && GFLang.get() === 'en') {
+  document.getElementById('page-title').textContent = 'Events';
+  document.getElementById('label-2026').textContent = '2026 TPABF 10th Anniversary';
+  document.getElementById('label-2025').textContent = '2025 TPABF Recap';
+  document.getElementById('copyright-text').textContent = '© 2026 GOODFUN TEAM. ALL RIGHTS RESERVED.';
+}
+</script>
 </body>
 </html>
