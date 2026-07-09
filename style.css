@@ -173,6 +173,7 @@ main { padding-top: env(safe-area-inset-top); padding-bottom: calc(72px + env(sa
 #camera-video {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
+#camera-video.mirrored { transform: scaleX(-1); }
 #camera-hint {
   position: absolute; top: calc(24px + env(safe-area-inset-top)); left: 0; right: 0;
   text-align: center; color: rgba(255,255,255,0.85); font-size: 12.5px; z-index: 2;
@@ -185,8 +186,7 @@ main { padding-top: env(safe-area-inset-top); padding-bottom: calc(72px + env(sa
   position: absolute; bottom: calc(28px + env(safe-area-inset-bottom)); left: 0; right: 0;
   display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 2;
 }
-.camera-controls-spacer { width: 44px; height: 44px; }
-#camera-cancel {
+#camera-cancel, #camera-flip {
   width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15);
   border: none; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center;
   cursor: pointer;

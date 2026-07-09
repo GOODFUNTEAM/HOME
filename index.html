@@ -48,7 +48,7 @@
   <div class="camera-controls">
     <button id="camera-cancel" aria-label="取消拍照"><i class="ti ti-x" aria-hidden="true"></i></button>
     <button id="camera-shutter" aria-label="拍照"></button>
-    <span class="camera-controls-spacer"></span>
+    <button id="camera-flip" aria-label="切換前後鏡頭"><i class="ti ti-camera-rotate" aria-hidden="true"></i></button>
   </div>
 </div>
 
@@ -119,6 +119,8 @@ function T(work) { return work[CUR_LANG] || work.zh; }
 
   var totalSlots = LAYERS.length * PER_LAYER;
   var cameraSlotIndex = Math.floor(Math.random() * totalSlots);
+  var cameraCardEl = null;
+  var cameraCardSize = 0;
 
   var pending = [];
   var globalIndex = 0;
@@ -134,16 +136,18 @@ function T(work) { return work[CUR_LANG] || work.zh; }
 
       if (globalIndex === cameraSlotIndex) {
         el.className = 'sphere-card camera-card';
-        el.innerHTML = '<i class="ti ti-camera" style="font-size:' + Math.round(size * 0.4) + 'px;" aria-hidden="true"></i>';
+        el.innerHTML = '<i class="ti ti-plus" style="font-size:' + Math.round(size * 0.4) + 'px;" aria-hidden="true"></i>';
         el.setAttribute('aria-label', CUR_LANG === 'zh' ? '用相機拍一張加入球體' : 'Take a photo to add to the sphere');
-        el.onclick = function () { window.openCamera(); };
+        el.onclick = function () { if (window.__gfSuppressClick) return; window.openCamera(); };
         el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.openCamera(); } };
+        cameraCardEl = el;
+        cameraCardSize = size;
       } else {
         var w = WORKS[globalIndex % WORKS.length];
         el.className = 'sphere-card';
         el.innerHTML = '<img src="' + w.img + '" alt="' + T(w).title + '" loading="lazy">';
         (function (work, cardEl) {
-          cardEl.onclick = function () { openWork(work, cardEl); };
+          cardEl.onclick = function () { if (window.__gfSuppressClick) return; openWork(work, cardEl); };
           cardEl.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work, cardEl); } };
         })(w, el);
         el.setAttribute('aria-label', T(w).title);
@@ -194,13 +198,17 @@ function T(work) { return work[CUR_LANG] || work.zh; }
   }
   update();
 
+  var dragStartX = 0, dragStartY = 0, dragMoved = false;
+
   stage.addEventListener('pointerdown', function (e) {
     if (locked) return;
     dragging = true; autoSpin = false; lastX = e.clientX; lastY = e.clientY;
+    dragStartX = e.clientX; dragStartY = e.clientY; dragMoved = false;
     stage.classList.add('dragging');
   });
   window.addEventListener('pointermove', function (e) {
     if (!dragging) return;
+    if (Math.abs(e.clientX - dragStartX) > 6 || Math.abs(e.clientY - dragStartY) > 6) dragMoved = true;
     rotY += (e.clientX - lastX) * 0.3;
     rotX -= (e.clientY - lastY) * 0.3;
     rotX = Math.max(-80, Math.min(80, rotX));
@@ -211,6 +219,10 @@ function T(work) { return work[CUR_LANG] || work.zh; }
     dragging = false;
     stage.classList.remove('dragging');
     setTimeout(function () { autoSpin = true; }, 1200);
+    if (dragMoved) {
+      window.__gfSuppressClick = true;
+      setTimeout(function () { window.__gfSuppressClick = false; }, 80);
+    }
   });
 
   function tween(from, to, duration, ease, onUpdate, onDone) {
@@ -244,30 +256,20 @@ function T(work) { return work[CUR_LANG] || work.zh; }
       });
     },
     setCardOpacity: function (el, val) { el.style.opacity = val; },
-    addPhotoCard: function (dataUrl) {
-      var p = place(1, 205, Math.random() * Math.PI * 2)[0];
-      var size = isMobile ? 84 : 108;
-      var el = document.createElement('div');
-      el.className = 'sphere-card';
-      var finalT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(1)';
-      var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.1)';
-      el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform:' + startT + ';';
-      el.innerHTML = '<img src="' + dataUrl + '" alt="' + (CUR_LANG === 'zh' ? '你拍的照片' : 'Your photo') + '">';
+    usePhotoInCameraSlot: function (dataUrl) {
+      if (!cameraCardEl) return;
+      var el = cameraCardEl;
       var photoWork = {
         img: dataUrl,
         zh: { title: '你拍的照片', desc: '用你的相機即時拍下的照片，只有這次瀏覽看得到，重新整理頁面後就會消失，不會被保存或上傳。' },
         en: { title: 'Your Photo', desc: 'Captured live with your camera. Visible only in this browsing session — it disappears on refresh and is never saved or uploaded.' }
       };
-      el.onclick = function () { openWork(photoWork, el); };
-      el.setAttribute('role', 'button');
-      el.setAttribute('tabindex', '0');
+      el.className = 'sphere-card';
+      el.innerHTML = '<img src="' + dataUrl + '" alt="' + T(photoWork).title + '">';
       el.setAttribute('aria-label', T(photoWork).title);
+      el.onclick = function () { if (window.__gfSuppressClick) return; openWork(photoWork, el); };
       el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(photoWork, el); } };
-      world.appendChild(el);
-      cards.push({ el: el, wx: -p.z, wy: p.y, wz: -p.x });
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () { el.style.transform = finalT; });
-      });
+      cameraCardEl = null;
     }
   };
 })();
@@ -408,26 +410,26 @@ document.addEventListener('keydown', function (e) {
 
 var cameraStream = null;
 
-window.openCamera = function () {
-  if (detailState.open) return;
-  var overlay = document.getElementById('camera-overlay');
+var currentFacingMode = 'environment';
+
+function startCameraStream(facingMode) {
   var video = document.getElementById('camera-video');
   var errEl = document.getElementById('camera-error');
   var hintEl = document.getElementById('camera-hint');
-  errEl.textContent = '';
-  hintEl.style.display = '';
-  overlay.classList.add('open');
 
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    errEl.textContent = CUR_LANG === 'zh' ? '這個瀏覽器不支援相機功能。' : 'Camera is not supported in this browser.';
-    hintEl.style.display = 'none';
-    return;
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(function (t) { t.stop(); });
+    cameraStream = null;
   }
 
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode }, audio: false })
     .then(function (stream) {
       cameraStream = stream;
       video.srcObject = stream;
+      video.classList.toggle('mirrored', facingMode === 'user');
+      currentFacingMode = facingMode;
+      errEl.textContent = '';
+      hintEl.style.display = '';
     })
     .catch(function (err) {
       hintEl.style.display = 'none';
@@ -435,10 +437,35 @@ window.openCamera = function () {
         ? '無法使用相機，請確認已允許網頁存取相機權限。'
         : 'Could not access the camera. Please allow camera permission for this site.';
     });
+}
+
+window.openCamera = function () {
+  if (window.__gfSuppressClick || detailState.open) return;
+  var overlay = document.getElementById('camera-overlay');
+  var errEl = document.getElementById('camera-error');
+  var hintEl = document.getElementById('camera-hint');
+  errEl.textContent = '';
+  hintEl.style.display = '';
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    errEl.textContent = CUR_LANG === 'zh' ? '這個瀏覽器不支援相機功能。' : 'Camera is not supported in this browser.';
+    hintEl.style.display = 'none';
+    return;
+  }
+
+  currentFacingMode = 'environment';
+  startCameraStream(currentFacingMode);
 };
+
+function flipCamera() {
+  startCameraStream(currentFacingMode === 'environment' ? 'user' : 'environment');
+}
 
 function closeCamera() {
   document.getElementById('camera-overlay').classList.remove('open');
+  document.body.style.overflow = '';
   var video = document.getElementById('camera-video');
   video.srcObject = null;
   if (cameraStream) {
@@ -456,13 +483,18 @@ function capturePhoto() {
   var ctx = canvas.getContext('2d');
   var sx = (video.videoWidth - size) / 2;
   var sy = (video.videoHeight - size) / 2;
+  if (currentFacingMode === 'user') {
+    ctx.translate(size, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
   var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
   closeCamera();
-  if (window.SphereControl) window.SphereControl.addPhotoCard(dataUrl);
+  if (window.SphereControl) window.SphereControl.usePhotoInCameraSlot(dataUrl);
 }
 
 document.getElementById('camera-shutter').addEventListener('click', capturePhoto);
+document.getElementById('camera-flip').addEventListener('click', flipCamera);
 document.getElementById('camera-cancel').addEventListener('click', closeCamera);
 document.getElementById('camera-overlay').addEventListener('click', function (e) {
   if (e.target.id === 'camera-overlay') closeCamera();
