@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GOODFUN TEAM ｜ 孤芳小隊</title>
 <meta name="description" content="孤芳小隊 GOODFUN TEAM — 獨立藝術創作單位。關注日常環境中的結構、使用痕跡與暫停狀態。">
 <meta property="og:title" content="GOODFUN TEAM ｜ 孤芳小隊">
@@ -35,15 +35,11 @@
   </div>
 </main>
 
-<div id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-close" onclick="closeModal()" onkeydown="if(event.key==='Enter'){closeModal()}" role="button" tabindex="0" aria-label="關閉">×</div>
-    <div class="modal-img-wrap"><img id="modal-img" src="" alt=""></div>
-    <div class="modal-body-inner">
-      <h2 id="modal-title"></h2>
-      <p id="modal-desc"></p>
-    </div>
-  </div>
+<div id="detail-overlay">
+  <h2 id="detail-title"></h2>
+  <div class="marquee-row marquee-top"><div class="marquee-track" id="marquee-top"></div></div>
+  <div id="detail-img-slot"><img id="detail-img" src="" alt=""></div>
+  <div class="marquee-row marquee-bottom"><div class="marquee-track" id="marquee-bottom"></div></div>
 </div>
 
 <script src="common.js"></script>
@@ -102,10 +98,10 @@ var WORKS = [
       var startT = 'rotateY(' + (p.lon*180/Math.PI) + 'deg) rotateX(' + (-(p.phi*180/Math.PI-90)) + 'deg) translateZ(' + (-p.radius) + 'px) scale(0.15)';
       el.style.cssText = 'top:' + (-size/2) + 'px; left:' + (-size/2) + 'px; width:' + size + 'px; height:' + size + 'px; transform:' + (reduceMotion ? finalT : startT) + '; transition-delay:' + (reduceMotion ? 0 : Math.min(globalIndex * 10, 1100)) + 'ms;';
       el.innerHTML = '<img src="' + w.img + '" alt="' + w.title + '" loading="lazy">';
-      (function (work) {
-        el.onclick = function () { openWork(work); };
-        el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work); } };
-      })(w);
+      (function (work, cardEl) {
+        cardEl.onclick = function () { openWork(work, cardEl); };
+        cardEl.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWork(work, cardEl); } };
+      })(w, el);
       el.setAttribute('role', 'button');
       el.setAttribute('tabindex', '0');
       el.setAttribute('aria-label', w.title);
@@ -126,7 +122,8 @@ var WORKS = [
 
   var rotY = 0, rotX = 0;
   var dragging = false, lastX = 0, lastY = 0, autoSpin = true;
-
+  var worldScale = 1;
+  var locked = false;
 
   function currentZ(c, rxDeg, ryDeg) {
     var rx = rxDeg * Math.PI / 180, ry = ryDeg * Math.PI / 180;
@@ -136,21 +133,24 @@ var WORKS = [
   }
 
   function update() {
-    if (autoSpin) rotY += 0.12;
-    world.style.transform = 'translate(-50%,-50%) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+    if (autoSpin && !locked) rotY += 0.12;
+    world.style.transform = 'translate(-50%,-50%) scale(' + worldScale + ') rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
       var zc = currentZ(c, rotX, rotY);
       var closeness = (zc - 0.5) / 0.4;
       closeness = Math.max(0, Math.min(1, closeness));
-      c.el.style.opacity = (1 - closeness).toFixed(2);
-      c.el.style.pointerEvents = closeness > 0.5 ? 'none' : 'auto';
+      if (c.el.dataset.flying !== '1') {
+        c.el.style.opacity = (1 - closeness).toFixed(2);
+      }
+      c.el.style.pointerEvents = (closeness > 0.5 || locked) ? 'none' : 'auto';
     }
     requestAnimationFrame(update);
   }
   update();
 
   stage.addEventListener('pointerdown', function (e) {
+    if (locked) return;
     dragging = true; autoSpin = false; lastX = e.clientX; lastY = e.clientY;
     stage.classList.add('dragging');
   });
@@ -167,21 +167,137 @@ var WORKS = [
     stage.classList.remove('dragging');
     setTimeout(function () { autoSpin = true; }, 1200);
   });
+
+  function tween(from, to, duration, ease, onUpdate, onDone) {
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var t = Math.min(1, (ts - start) / duration);
+      var e = ease(t);
+      onUpdate(from + (to - from) * e);
+      if (t < 1) requestAnimationFrame(step);
+      else if (onDone) onDone();
+    }
+    requestAnimationFrame(step);
+  }
+  var easeInQuad = function (t) { return t * t; };
+  var easeOutQuad = function (t) { return 1 - (1 - t) * (1 - t); };
+
+  window.SphereControl = {
+    pulseIn: function (onDone) {
+      locked = true;
+      tween(1, 0.4, 320, easeInQuad, function (v) { worldScale = v; }, function () {
+        tween(0.4, 1, 380, easeOutQuad, function (v) { worldScale = v; }, onDone);
+      });
+    },
+    pulseOut: function (onDone) {
+      tween(1, 0.4, 320, easeInQuad, function (v) { worldScale = v; }, function () {
+        tween(0.4, 1, 380, easeOutQuad, function (v) { worldScale = v; }, function () {
+          locked = false;
+          if (onDone) onDone();
+        });
+      });
+    },
+    setCardOpacity: function (el, val) { el.style.opacity = val; }
+  };
 })();
 
-function openWork(w) {
-  document.getElementById('modal-img').src = w.img;
-  document.getElementById('modal-img').alt = w.title;
-  document.getElementById('modal-title').textContent = w.title;
-  document.getElementById('modal-desc').textContent = w.desc;
-  document.getElementById('modal-overlay').classList.add('open');
+
+var detailState = { open: false, cardEl: null, cardRect: null, flipEl: null };
+
+function buildMarquee(text) {
+  var t = text.replace(/\n/g, '　').trim();
+  var unit = t + '　★　';
+  return unit + unit + unit;
 }
-function closeModal(e) {
-  document.getElementById('modal-overlay').classList.remove('open');
+
+function openWork(w, cardEl) {
+  if (detailState.open || cardEl.dataset.flying === '1') return;
+  detailState.open = true;
+  detailState.cardEl = cardEl;
+  var rect = cardEl.getBoundingClientRect();
+  detailState.cardRect = rect;
+  cardEl.dataset.flying = '1';
+  cardEl.style.opacity = '0';
+
+  document.getElementById('detail-title').textContent = w.title;
+  document.getElementById('marquee-top').textContent = buildMarquee(w.desc);
+  document.getElementById('marquee-bottom').textContent = buildMarquee(w.desc);
+  document.getElementById('detail-img').src = w.img;
+  document.getElementById('detail-img').alt = w.title;
+
+  var flip = document.createElement('img');
+  flip.className = 'flip-img';
+  flip.src = w.img;
+  flip.alt = '';
+  flip.style.transition = 'none';
+  flip.style.top = rect.top + 'px';
+  flip.style.left = rect.left + 'px';
+  flip.style.width = rect.width + 'px';
+  flip.style.height = rect.height + 'px';
+  flip.style.borderRadius = '50%';
+  document.body.appendChild(flip);
+  detailState.flipEl = flip;
+
+  void flip.offsetWidth;
+
+  window.SphereControl.pulseIn();
+
+  requestAnimationFrame(function () {
+    flip.style.transition = '';
+    var slot = document.getElementById('detail-img-slot').getBoundingClientRect();
+    flip.style.top = slot.top + 'px';
+    flip.style.left = slot.left + 'px';
+    flip.style.width = slot.width + 'px';
+    flip.style.height = slot.height + 'px';
+    flip.style.borderRadius = '20px';
+  });
+
+  setTimeout(function () {
+    document.getElementById('detail-overlay').classList.add('open');
+  }, 80);
+
+  document.body.style.overflow = 'hidden';
 }
+
+function closeWork() {
+  if (!detailState.open) return;
+  detailState.open = false;
+  document.getElementById('detail-overlay').classList.remove('open');
+
+  var flip = detailState.flipEl;
+  var rect = detailState.cardRect;
+  if (flip && rect) {
+    flip.style.top = rect.top + 'px';
+    flip.style.left = rect.left + 'px';
+    flip.style.width = rect.width + 'px';
+    flip.style.height = rect.height + 'px';
+    flip.style.borderRadius = '50%';
+  }
+
+  window.SphereControl.pulseOut();
+
+  setTimeout(function () {
+    if (flip) flip.remove();
+    if (detailState.cardEl) {
+      detailState.cardEl.dataset.flying = '';
+      detailState.cardEl.style.opacity = '';
+    }
+    document.body.style.overflow = '';
+    detailState.cardEl = null;
+    detailState.flipEl = null;
+  }, 520);
+}
+
+document.getElementById('detail-overlay').addEventListener('click', function (e) {
+  if (e.target.id === 'detail-img-slot' || e.target.id === 'detail-img') return;
+  closeWork();
+});
 document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') closeWork();
 });
 </script>
+
 </body>
 </html>
+
