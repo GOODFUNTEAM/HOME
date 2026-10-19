@@ -64,6 +64,27 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://goodfunteam.github.io/HOME/about.html"/>
   </url>
   <url>
+    <loc>https://goodfunteam.github.io/HOME/works/bulletin-folder.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://goodfunteam.github.io/HOME/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://goodfunteam.github.io/HOME/en/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://goodfunteam.github.io/HOME/jp/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://goodfunteam.github.io/HOME/works/bulletin-folder.html"/>
+  </url>
+  <url>
+    <loc>https://goodfunteam.github.io/HOME/en/works/bulletin-folder.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://goodfunteam.github.io/HOME/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://goodfunteam.github.io/HOME/en/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://goodfunteam.github.io/HOME/jp/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://goodfunteam.github.io/HOME/works/bulletin-folder.html"/>
+  </url>
+  <url>
+    <loc>https://goodfunteam.github.io/HOME/jp/works/bulletin-folder.html</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://goodfunteam.github.io/HOME/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://goodfunteam.github.io/HOME/en/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://goodfunteam.github.io/HOME/jp/works/bulletin-folder.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://goodfunteam.github.io/HOME/works/bulletin-folder.html"/>
+  </url>
+  <url>
     <loc>https://goodfunteam.github.io/HOME/works/horse-card.html</loc>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://goodfunteam.github.io/HOME/works/horse-card.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://goodfunteam.github.io/HOME/en/works/horse-card.html"/>
